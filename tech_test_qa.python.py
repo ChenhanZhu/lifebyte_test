@@ -26,22 +26,11 @@ cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema
 # Fetch all rows
 table_names = cur.fetchall()
 
-# Close cursor and connection
-cur.close()
-conn.close()
 
 # Iterate over table names and perform tests
 for table_name in table_names:
     table_name = table_name[0]  # Extract table name from tuple
     print(f"Testing table: {table_name}")
-    conn = psycopg2.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASS,
-        host=DB_HOST,
-        port=DB_PORT
-    )
-    cur = conn.cursor()
 
     query = f"SELECT * FROM {table_name}"
     # Load data into a DataFrame
@@ -137,6 +126,9 @@ fd.close()
 
 # Load data into a DataFrame
 data = pd.read_sql_query(query, conn)
+
+# Close cursor and connection
+cur.close()
 conn.close()
 
 # Display basic information about the dataset
