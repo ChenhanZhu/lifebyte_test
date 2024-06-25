@@ -56,6 +56,15 @@ for table_name in table_names:
     print(f"Number of duplicate rows: {duplicate_rows}")
     print("\n")
 
+    if 'open_time' in data.columns and 'close_time' in data.columns:
+        print("Checking that open_time <= close_time:")
+        open_close_violations = data[pd.to_datetime(data['open_time']) > pd.to_datetime(data['close_time'])]
+        if not open_close_violations.empty:
+            print("Found open_time > close_time:")
+            print(open_close_violations)
+        else:
+            print("All open_time values are <= close_time values.")
+        print("\n")
 
     # Check for data type mismatches
     print("Data Type Mismatches:")
@@ -118,6 +127,17 @@ for table_name in table_names:
     # Display summary statistics for further inspection
     print("Summary Statistics:")
     print(data.describe())
+
+    # Check for hash length consistency (assuming hash columns end with '_hash')
+    print("Checking hash length consistency:")
+    hash_cols = [col for col in data.columns if col.endswith('_hash')]
+    for col in hash_cols:
+        hash_lengths = data[col].dropna().apply(len).unique()
+        if len(hash_lengths) > 1:
+            print(f"Column '{col}' has inconsistent hash lengths: {hash_lengths}")
+        else:
+            print(f"Column '{col}' has consistent hash lengths.")
+    print("\n")
 
 
 fd = open('tech_test_quesy.sql', 'r')
